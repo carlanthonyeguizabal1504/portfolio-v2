@@ -36,6 +36,7 @@ export function validateContent(value: unknown): asserts value is ContentSnapsho
     if (Array.isArray(base) !== Array.isArray(candidate[key]) || typeof base !== typeof candidate[key] || candidate[key] === null) throw new Error(`Check the ${key} section.`)
   }
   const d = candidate as Record<string, any>
+  check(d.homeHero.cta.to, 'href')
   if (!Array.isArray(d.homeManifesto.parts) || d.homeManifesto.parts.filter((p: any) => p && typeof p === 'object' && 'key' in p).length !== 4) throw new Error('The manifesto needs exactly four highlighted words.')
   if (!Array.isArray(d.workChapters) || !d.workChapters.length || !Array.isArray(d.productTabs) || !d.productTabs.length) throw new Error('Keep at least one project chapter and one showcase tab.')
   for (const c of d.workChapters) if (!c.id || !Array.isArray(c.items)) throw new Error('Each project chapter needs its ID and items list.')

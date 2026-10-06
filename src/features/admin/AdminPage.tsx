@@ -16,7 +16,7 @@ const groups: [string, string[]][] = [
   ['Privacy & credits', ['privacyPolicy','termsOfService']],
 ]
 const labels: Record<string, string> = { homeHero:'Hero',homeManifesto:'Scroll statement',homeSections:'Section headings',ctaBand:'Closing message',workSection:'Project heading',workChapters:'Project chapters',aboutSection:'About me',liveAutomation:'Animated project flow',clientAccounts:'Learning records',communityQuotes:'Feedback notes',videoTestimonials:'Project clips',showcaseFilm:'Film or image preview',productTabs:'Project previews',showcaseStats:'Spotlight statistics',contactForm:'Message form',dailyTools:'Tools in use',privacyPolicy:'Privacy',termsOfService:'Credits & terms' }
-const technical = new Set(['srcSet','width','height','x','y','w','h','step','plane','icon','mono'])
+const technical = new Set(['avatarSmall','srcSet','width','height','x','y','w','h','step','plane','icon','mono'])
 const cleanLabel = (text: string) => labels[text] || text.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/[_-]/g,' ').replace(/^./,c=>c.toUpperCase())
 const imageField = (key: string) => ['src','logo','avatarSmall','poster','phone','wide','headerLight','headerDark','light','dark'].includes(key)
 

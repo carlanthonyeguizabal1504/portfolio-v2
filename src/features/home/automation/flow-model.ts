@@ -48,7 +48,9 @@ export const placedNodes: PlacedNode[] = nodes.map((n, i) => ({ ...n, index: i, 
 export const placedLinks: PlacedLink[] = links.map((l) => {
   const from = node(l.from)
   const to = node(l.to)
-  const base = { ...l, id: `${l.from}-${l.to}`, ...timed(startOf(l.from) + 1), x1: 0, x2: 0, y: 0, lx: 0, ly: 0 }
+  const base = { ...l, id: `${l.from}-${l.to}`, ...timed(startOf(l.from) + 1), x1: 0, x2: 0, y: 0, lx: 0, ly: 0,
+    get label() { return liveAutomation.links.find(v => v.from === l.from && v.to === l.to)?.label },
+  }
   if (from.y === to.y && !isBack(l)) {
     // Along a row: straight across, stopping short of the arrowhead.
     const x1 = from.x + from.w

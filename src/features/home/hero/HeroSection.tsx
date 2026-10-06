@@ -39,8 +39,10 @@ export function HeroSection() {
           onClick={(event) => {
             // A new-tab click (Ctrl / Cmd / middle) keeps the link's own behaviour.
             if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return
+            const section = /^\/#([^/?#]+)$/.exec(homeHero.cta.to)?.[1]
+            if (!section) return
             event.preventDefault()
-            scrollToSection('contact')
+            scrollToSection(section)
           }}
         >
           {homeHero.cta.label}
