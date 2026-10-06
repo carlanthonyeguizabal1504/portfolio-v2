@@ -10,6 +10,8 @@ The editor includes profile, hero, highlighted statement, projects and galleries
 
 **Export backup** downloads your complete draft. **Import backup** loads it into the editor; it only publishes after you save. Unsaved edits stay in the current editor until discarded or the page is closed.
 
+In **Skills & tools → Skill logos**, upload the logo for each named skill. The same skill shares its logo across About and project cards; editing a repeated logo elsewhere also updates its other appearances. Previously uploaded logos in older backups are recovered automatically.
+
 ## Develop
 
 Node 22.12+ or 24:

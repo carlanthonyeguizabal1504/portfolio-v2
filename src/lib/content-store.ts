@@ -1,4 +1,5 @@
 import { contentRegistry, replace } from '@/content/personalize'
+import { sharedToolLogos } from './shared-tool-logos'
 
 const URL = 'https://yoqrjrqhnghdentkqhxs.supabase.co'
 const KEY = 'sb_publishable__PJ-SXvQ8Jz2SUF3rqdRTA_hd-DREP-'
@@ -54,7 +55,8 @@ function basePaths(node: unknown): unknown {
 
 export function applyContent(data: ContentSnapshot) {
   validateContent(data)
-  for (const key of Object.keys(contentRegistry)) replace(contentRegistry[key], basePaths(data[key]))
+  const synced = sharedToolLogos(data)
+  for (const key of Object.keys(contentRegistry)) replace(contentRegistry[key], basePaths(synced[key]))
 }
 
 export async function loadContent() {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { snapshot, signIn, signOut, readSession, verifyAdmin, saveContent, currentRevision, validateContent, type AdminSession, type ContentSnapshot } from '@/lib/content-store'
+import { editToolLogos, sharedToolLogos } from '@/lib/shared-tool-logos'
 import './admin.css'
 
 const groups: [string, string[]][] = [
@@ -67,7 +68,7 @@ function Fields({ value, name, change, path = name }: { value: unknown; name: st
     return <div className="ed-grid">{entries.map(([k,v]) => {
       const object = v && typeof v === 'object'
       return <div className={object ? 'ed-wide' : undefined} key={k}>
-        {object ? <details className="ed-details" open={['avatar','cta','picture','note'].includes(k)}><summary>{cleanLabel(k)}</summary><Fields value={v} name={k} path={path+'.'+k} change={next=>{
+        {object ? <details className="ed-details" open={['avatar','cta','picture','note'].includes(k)}><summary>{name==='tools' && !Array.isArray(value) && v && typeof v==='object' && 'name' in v ? String(v.name) : cleanLabel(k)}</summary><Fields value={v} name={k} path={path+'.'+k} change={next=>{
           const updated={...value,[k]:next}; change(updated)
         }}/></details> : <Fields value={v} name={k} path={path+'.'+k} change={next=>{
           const updated={...value,[k]:next} as Record<string,unknown>
@@ -105,7 +106,7 @@ export function AdminPage() {
   useEffect(()=>{ let alive=true;const saved=readSession();(async()=>{try{if(saved){const active=await verifyAdmin(saved);if(alive)setSession(active)}if(alive)setRevision(await currentRevision())}catch{if(saved)await signOut()}finally{if(alive)setChecking(false)}})();return()=>{alive=false} },[])
   useEffect(()=>{if(!dirty)return;const warn=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue=''};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn)},[dirty])
   async function login(e:FormEvent<HTMLFormElement>) { e.preventDefault();setBusy(true);setStatus('');const form=new FormData(e.currentTarget);try{setSession(await signIn(String(form.get('email')),String(form.get('password'))));setRevision(await currentRevision());setDraft(snapshot())}catch(err){setStatus((err as Error).message)}finally{setBusy(false)} }
-  function update(key:string,value:unknown) { setDraft(old=>({...old,[key]:value}));setDirty(true);setStatus('') }
+  function update(key:string,value:unknown) { setDraft(old=>editToolLogos(old,key,value));setDirty(true);setStatus('') }
   function backup() { const blob=new Blob([JSON.stringify(draft,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='carl-portfolio-backup.json';a.click();URL.revokeObjectURL(url) }
   async function save() {setBusy(true);setStatus('Saving…');try{ const next=structuredClone(draft);const site=next.site as Record<string,unknown>;const avatar=site.avatar as Record<string,unknown>;site.avatarSmall=avatar.src;setRevision(await saveContent(next,session!,revision));setDraft(next);setDirty(false);setStatus('Saved online. Your portfolio now shows these changes.')}catch(err){setStatus((err as Error).message)}finally{setBusy(false)} }
   if(checking) return <main className="ed-login"><p>Opening your editor…</p></main>
@@ -114,8 +115,8 @@ export function AdminPage() {
     <header className="ed-header"><div><span className="ed-eyebrow">Carl Anthony · Admin</span><h1>Your portfolio, your way.</h1></div><div className="ed-actions"><Link to="/" onClick={e=>{if(dirty&&!confirm('Leave the editor with unsaved changes?'))e.preventDefault()}}>View portfolio</Link><button onClick={()=>{if(!dirty||confirm('Log out and discard your unsaved edits?')){void signOut();setSession(null);setDirty(false)}}}>Log out</button></div></header>
     <div className="ed-layout"><nav className="ed-nav" aria-label="Editor sections">{groups.map(([label],i)=><button key={label} className={section===i?'active':''} onClick={()=>setSection(i)}>{String(i+1).padStart(2,'0')}<span>{label}</span></button>)}</nav>
     <div className="ed-content"><div className="ed-section-head"><h2>{groups[section]![0]}</h2><p>Edit the fields, add your pictures, then save when you’re ready.</p></div>
-      {groups[section]![1].map(key=><section className="ed-card" key={key}><h3>{cleanLabel(key)}</h3><Fields value={draft[key]} name={key} change={value=>update(key,value)}/></section>)}
-      <div className="ed-backup"><button onClick={backup}>Export backup</button><button onClick={()=>file.current?.click()}>Import backup</button><button onClick={()=>{if(confirm('Discard unsaved edits and return to the last saved portfolio?')){setDraft(snapshot());setDirty(false);setStatus('Draft reset.')}}}>Discard draft</button><input ref={file} hidden type="file" accept="application/json" onChange={async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>10*1024*1024)throw new Error('Choose a backup smaller than 10 MB.');const parsed=JSON.parse(await f.text());validateContent(parsed);setDraft(parsed);setDirty(true);setStatus('Backup imported into your draft. Save to publish it.')}catch(err){setStatus((err as Error).message)}e.target.value=''}}/></div>
+      {groups[section]![1].map(key=><section className="ed-card" key={key}><h3>{key==='tools'?'Skill logos':cleanLabel(key)}</h3>{key==='tools' && <p>Upload each skill logo here. It updates everywhere that skill appears after you save.</p>}<Fields value={draft[key]} name={key} change={value=>update(key,value)}/></section>)}
+      <div className="ed-backup"><button onClick={backup}>Export backup</button><button onClick={()=>file.current?.click()}>Import backup</button><button onClick={()=>{if(confirm('Discard unsaved edits and return to the last saved portfolio?')){setDraft(snapshot());setDirty(false);setStatus('Draft reset.')}}}>Discard draft</button><input ref={file} hidden type="file" accept="application/json" onChange={async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>10*1024*1024)throw new Error('Choose a backup smaller than 10 MB.');const parsed=JSON.parse(await f.text());validateContent(parsed);setDraft(sharedToolLogos(parsed));setDirty(true);setStatus('Backup imported into your draft. Save to publish it.')}catch(err){setStatus((err as Error).message)}e.target.value=''}}/></div>
     </div></div>
     <footer className="ed-savebar"><div><b>{dirty?'Unsaved changes':'All changes saved'}</b><span role="status" className="ed-status">{status || 'Your edits appear for everyone after saving.'}</span></div><button className="ed-primary" disabled={busy||!dirty} onClick={()=>void save()}>{busy?'Saving…':'Save changes'}</button></footer>
   </main>
