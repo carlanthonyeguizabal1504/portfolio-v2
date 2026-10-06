@@ -1,0 +1,149 @@
+/*
+ * Home hero. Type sizes use container units (cqi) so the bold line, "MAKE IT YOURS.",
+ * always fits the content column whatever the sidebar is doing.
+ */
+
+.hero {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* svh, not dvh: the hero must not resize while a phone's address bar slides away mid-scroll. */
+  min-height: 100svh;
+  padding: 96px 24px;
+  /* The parting lines travel sideways on scroll; clip them here so the page never scrolls sideways. */
+  overflow-x: clip;
+  text-align: center;
+}
+
+.hero__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  /* "MAKE IT YOURS." in Geist 700 at -0.05em is 7.20em wide: 13.05cqi fills ~94% of the column (7.20 x
+     13.05 = 94). The 2.3rem floor keeps the smallest phones' line readable (~265px at 320). To re-measure
+     for your own words: set the bold line in the browser, read its width in em (range width / font-size),
+     and use 94 / that width. Keep the thin line narrower than the bold one, or it overflows. */
+  font-size: clamp(1.9rem, 11cqi, 9rem);
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform-origin: 50% 0;
+}
+
+.hero__layer {
+  display: block;
+}
+
+.hero__line {
+  display: block;
+  /* Rise and settle on load, thin line first (critically damped spring, no overshoot). */
+  animation: hero-rise var(--dur-slow) var(--ease-spring) both;
+}
+.hero__line--thin {
+  font-weight: 100;
+  color: var(--ink);
+}
+.hero__line--bold {
+  font-weight: 700;
+  color: var(--ink);
+  animation-delay: 90ms;
+}
+
+.hero__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero__sub {
+  max-width: 60ch; /* two lines on desktop */
+  margin: 40px 0 0;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  animation: hero-rise var(--dur-slow) var(--ease-spring) 180ms both;
+}
+
+.hero__cta {
+  margin-top: 40px;
+  animation: hero-rise var(--dur-slow) var(--ease-spring) 260ms both;
+}
+
+/* Starts at 0.1, not 0: Chrome never counts a fully transparent first paint as the Largest Contentful
+   Paint, so a 0 start made a hidden heading further down the page the LCP (Lighthouse, 2026-10-03). */
+@keyframes hero-rise {
+  from {
+    opacity: 0.1;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Phones: the bar above takes 56px, so the hero fills the rest of the first screen. */
+@media (max-width: 1023px) {
+  .hero {
+    min-height: calc(100svh - 56px);
+    padding-block: 64px;
+  }
+}
+
+/*
+ * Phones and tablets: the scroll exit runs as a CSS scroll timeline, on the compositor, in the same
+ * frame as the thumb (a JS scrub trails it). Desktop with a fine pointer runs hero-scene.ts instead.
+ * animation-timeline sits in its own, more specific rule: a minifier folds it into the `animation`
+ * shorthand otherwise, and the browser drops the whole declaration.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (not ((min-width: 1024px) and (hover: hover) and (pointer: fine))) {
+    .hero {
+      view-timeline-name: --hero;
+    }
+    .hero .hero__title {
+      animation: hero-sink linear both;
+    }
+    .hero .hero__foot {
+      animation: hero-leave linear both;
+    }
+    .app .hero .hero__title,
+    .app .hero .hero__foot {
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes hero-sink {
+  to {
+    opacity: 0;
+    transform: translateY(30svh) scale(0.92);
+  }
+}
+
+@keyframes hero-leave {
+  40%,
+  to {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__line,
+  .hero__sub,
+  .hero__cta {
+    animation: hero-fade 200ms ease both;
+  }
+}

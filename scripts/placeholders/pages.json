@@ -1,0 +1,33 @@
+[
+  { "path": "images/clients/client-1.webp", "width": 128, "height": 128, "kind": "logo", "label": "C1" },
+  { "path": "images/clients/client-2.webp", "width": 128, "height": 128, "kind": "logo", "label": "C2" },
+  { "path": "images/clients/64/client-1.webp", "width": 64, "height": 64, "kind": "resize", "from": "images/clients/client-1.webp" },
+  { "path": "images/clients/64/client-2.webp", "width": 64, "height": 64, "kind": "resize", "from": "images/clients/client-2.webp" },
+
+  { "path": "media/clip-1-poster.jpg", "width": 640, "height": 360, "kind": "poster", "label": "Client video 1" },
+  { "path": "media/clip-1.mp4", "width": 640, "height": 360, "kind": "video", "seconds": 8, "poster": "media/clip-1-poster.jpg", "label": "Client video 1" },
+  { "path": "media/clip-2-poster.jpg", "width": 464, "height": 832, "kind": "poster", "label": "Client video 2" },
+  { "path": "media/clip-2.mp4", "width": 464, "height": 832, "kind": "video", "seconds": 8, "poster": "media/clip-2-poster.jpg", "label": "Client video 2" },
+
+  { "path": "images/showcase/film-poster.webp", "width": 1280, "height": 720, "kind": "poster", "label": "Product Name" },
+  { "path": "images/showcase/film-poster-640.webp", "width": 640, "height": 360, "kind": "resize", "from": "images/showcase/film-poster.webp" },
+  { "path": "images/showcase/film-poster-960.webp", "width": 960, "height": 540, "kind": "resize", "from": "images/showcase/film-poster.webp" },
+  { "path": "media/showcase-film.mp4", "width": 1280, "height": 720, "kind": "video", "seconds": 10, "poster": "images/showcase/film-poster.webp", "label": "Product Name" },
+
+  { "path": "images/showcase/room-1.webp", "width": 1600, "height": 1000, "kind": "screen", "variant": "dashboard", "label": "Room One" },
+  { "path": "images/showcase/room-2.webp", "width": 1600, "height": 1000, "kind": "screen", "variant": "canvas", "label": "Room Two" },
+  { "path": "images/showcase/room-3.webp", "width": 1600, "height": 1000, "kind": "screen", "variant": "list", "label": "Room Three" },
+  { "path": "images/showcase/room-4.webp", "width": 1600, "height": 1000, "kind": "screen", "variant": "form", "label": "Room Four" },
+  { "path": "images/showcase/room-5.webp", "width": 1600, "height": 1000, "kind": "screen", "variant": "dashboard", "label": "Room Five" },
+
+  { "path": "images/showcase/800/room-1.webp", "width": 800, "height": 500, "kind": "resize", "from": "images/showcase/room-1.webp" },
+  { "path": "images/showcase/800/room-2.webp", "width": 800, "height": 500, "kind": "resize", "from": "images/showcase/room-2.webp" },
+  { "path": "images/showcase/800/room-3.webp", "width": 800, "height": 500, "kind": "resize", "from": "images/showcase/room-3.webp" },
+  { "path": "images/showcase/800/room-4.webp", "width": 800, "height": 500, "kind": "resize", "from": "images/showcase/room-4.webp" },
+  { "path": "images/showcase/800/room-5.webp", "width": 800, "height": 500, "kind": "resize", "from": "images/showcase/room-5.webp" },
+  { "path": "images/showcase/1200/room-1.webp", "width": 1200, "height": 750, "kind": "resize", "from": "images/showcase/room-1.webp" },
+  { "path": "images/showcase/1200/room-2.webp", "width": 1200, "height": 750, "kind": "resize", "from": "images/showcase/room-2.webp" },
+  { "path": "images/showcase/1200/room-3.webp", "width": 1200, "height": 750, "kind": "resize", "from": "images/showcase/room-3.webp" },
+  { "path": "images/showcase/1200/room-4.webp", "width": 1200, "height": 750, "kind": "resize", "from": "images/showcase/room-4.webp" },
+  { "path": "images/showcase/1200/room-5.webp", "width": 1200, "height": 750, "kind": "resize", "from": "images/showcase/room-5.webp" }
+]

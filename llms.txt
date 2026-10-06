@@ -1,0 +1,25 @@
+# Carl Anthony Eguizabal - Carl Anthony
+
+> Carl Anthony’s BSIT student portfolio, school projects, and learning journey.
+
+2nd-year BSIT student, Philippines. Email: eguizabalcarl77@gmail.com
+
+## Pages
+
+- [Home](https://carlanthonyeguizabal1504.github.io/portfolio-v2/): Carl Anthony’s BSIT student portfolio, school projects, and learning journey.
+- [Learning Log](https://carlanthonyeguizabal1504.github.io/portfolio-v2/proof): Carl Anthony’s BSIT student portfolio, school projects, and learning journey.
+- [Showcase](https://carlanthonyeguizabal1504.github.io/portfolio-v2/showcase): Carl Anthony’s BSIT student portfolio, school projects, and learning journey.
+- [Contact](https://carlanthonyeguizabal1504.github.io/portfolio-v2/contact): Carl Anthony’s BSIT student portfolio, school projects, and learning journey.
+- [Privacy Policy](https://carlanthonyeguizabal1504.github.io/portfolio-v2/privacy): Carl Anthony’s BSIT student portfolio, school projects, and learning journey.
+- [Terms of Service](https://carlanthonyeguizabal1504.github.io/portfolio-v2/terms): Carl Anthony’s BSIT student portfolio, school projects, and learning journey.
+
+## Work
+
+- [Clinic Appointment Website](https://carlanthonyeguizabal1504.github.io/portfolio-v2/work/featured): A clinic appointment website created for my Human–Computer Interaction project.
+- [Class Activities](https://carlanthonyeguizabal1504.github.io/portfolio-v2/work/case-studies): My IT Elective activities, from favorite songs to an Avengers hub.
+- [Learning Process](https://carlanthonyeguizabal1504.github.io/portfolio-v2/work/process): How I turn an assignment into a finished project.
+- [Project Screens](https://carlanthonyeguizabal1504.github.io/portfolio-v2/work/screens): Screens and previews from my school projects.
+- [Live Websites](https://carlanthonyeguizabal1504.github.io/portfolio-v2/work/websites): All of my published school websites in one place.
+- [Design & Code](https://carlanthonyeguizabal1504.github.io/portfolio-v2/work/apps): An honest look at my current skills and learning progress.
+- [Beyond the Screen](https://carlanthonyeguizabal1504.github.io/portfolio-v2/work/side-projects): The things that help me reset and stay curious.
+- [How I Work](https://carlanthonyeguizabal1504.github.io/portfolio-v2/work/experiments): The habits I bring into my projects.

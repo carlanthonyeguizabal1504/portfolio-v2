@@ -1,0 +1,209 @@
+// E2E check for the Home Work bento + chapter sheet, driven like a visitor.
+// Usage: BASE=http://localhost:5190 node scripts/check-work-sheet.mjs   (screens -> scripts/out/sheet/)
+import { chromium } from 'playwright'
+import { mkdirSync, readFileSync, rmSync } from 'node:fs'
+
+const BASE = process.env.BASE ?? 'http://localhost:5190'
+// The site name, read from the identity file, so the page-title checks follow whatever you put there.
+const NAME = readFileSync(new URL('../src/content/site.ts', import.meta.url), 'utf8').match(/name: '([^']*)'/)[1]
+const OUT = new URL('./out/sheet/', import.meta.url)
+rmSync(OUT, { recursive: true, force: true })
+mkdirSync(OUT, { recursive: true })
+const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, OUT).pathname.slice(1) })
+
+const failures = []
+const check = (ok, message) => {
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${message}`)
+  if (!ok) failures.push(message)
+}
+
+/** Head + sheet state in one read. */
+const read = (page) =>
+  page.evaluate(() => {
+    // The sheet's CollectionPage (Home also carries the About section's Person block).
+    const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].find((s) => s.textContent.includes('"CollectionPage"'))
+    let items = null
+    try {
+      items = ld ? JSON.parse(ld.textContent).mainEntity.numberOfItems : null
+    } catch {
+      items = 'bad json'
+    }
+    return {
+      path: location.pathname,
+      title: document.title,
+      canonicals: [...document.querySelectorAll('link[rel="canonical"]')].map((l) => l.href),
+      descriptions: document.querySelectorAll('meta[name="description"]').length,
+      open: !!document.querySelector('dialog.sh')?.open,
+      ldItems: items,
+      locked: document.documentElement.dataset.scrollLocked === 'true',
+      scrollY: Math.round(scrollY),
+      workTop: Math.round(document.getElementById('work').getBoundingClientRect().top + scrollY),
+      workActive: document.querySelector('[data-nav-id="work"]')?.dataset.active === 'true',
+    }
+  })
+
+/** The bento: tile edges, sizes, loaded pictures, width. */
+const bento = (page) =>
+  page.evaluate(() => {
+    const tiles = [...document.querySelectorAll('#work .wb__tile')]
+    const area = (t) => {
+      const r = t.getBoundingClientRect()
+      return r.width * r.height
+    }
+    return {
+      count: tiles.length,
+      edges: [...new Set(tiles.map((t) => `${getComputedStyle(t).borderTopWidth} ${getComputedStyle(t, '::after').boxShadow}`))],
+      biggest: tiles.reduce((a, b) => (area(b) > area(a) ? b : a)).getAttribute('href'),
+      broken: [...document.querySelectorAll('#work img')].filter((i) => i.complete && i.naturalWidth === 0).length,
+      hrefs: tiles.map((t) => t.getAttribute('href')),
+      overflowX: document.documentElement.scrollWidth > innerWidth,
+    }
+  })
+
+const browser = await chromium.launch()
+
+/* ---------- Desktop ---------- */
+{
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } })
+  await context.addInitScript(() => localStorage.setItem('pv2-theme', 'dark'))
+  const page = await context.newPage()
+  const errors = []
+  page.on('pageerror', (e) => errors.push(e.message))
+  await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(1200)
+
+  await page.click('[data-nav-id="work"]')
+  await page.waitForTimeout(1800)
+  let s = await read(page)
+  check(s.path === '/' && Math.abs(s.scrollY - s.workTop) < 40, `sidebar Work glides Home to the section (scrollY ${s.scrollY}, work ${s.workTop})`)
+  check(s.workActive, 'sidebar Work is lit while the section is on screen')
+  check(s.canonicals.length === 1 && new URL(s.canonicals[0]).pathname === '/', `home canonical (${s.canonicals})`)
+  await page.waitForTimeout(800)
+  await shot(page, 'desk-bento')
+
+  const b = await bento(page)
+  check(b.count === 8 && new Set(b.hrefs).size === 8 && b.hrefs.every((h) => h.startsWith('/work/')), `8 tiles, each a link to its chapter (${b.hrefs.join(' ')})`)
+  check(b.edges.length === 1 && b.edges[0] === '0px rgba(255, 255, 255, 0.14) 0px 0px 0px 1px inset', `dark: every tile has the soft hairline edge (${b.edges})`)
+  check(b.biggest === '/work/websites', `Websites (10 pages) is the biggest tile (${b.biggest})`)
+  check(b.broken === 0 && !b.overflowX, `pictures load, no sideways scroll (broken ${b.broken})`)
+  s = await read(page)
+  const homeY = s.scrollY
+
+  await page.click('#work a[href="/work/websites"]')
+  await page.waitForTimeout(160)
+  await shot(page, 'desk-open-mid')
+  await page.waitForTimeout(900)
+  s = await read(page)
+  check(s.path === '/work/websites' && s.open, 'the Websites tile opens /work/websites as an open sheet')
+  check(s.title.startsWith('Websites'), `chapter title (${s.title})`)
+  check(s.canonicals.length === 1 && s.canonicals[0].endsWith('/work/websites'), `chapter canonical (${s.canonicals})`)
+  check(s.descriptions === 1, `one meta description (${s.descriptions})`)
+  check(s.ldItems === 10, `JSON-LD lists 10 builds (${s.ldItems})`)
+  check(s.locked && Math.abs(s.scrollY - homeY) < 4, 'page behind is locked and did not move')
+  await shot(page, 'desk-open')
+  await page.locator('.sh__body').evaluate((el) => (el.scrollTop = 900))
+  await page.waitForTimeout(400)
+  await shot(page, 'desk-scrolled')
+
+  await page.locator('.sh__next a').click()
+  await page.waitForTimeout(900)
+  s = await read(page)
+  check(s.path === '/work/apps' && s.open, 'Next swaps to apps in place')
+  await shot(page, 'desk-next')
+
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(1000)
+  s = await read(page)
+  check(s.path === '/' && !s.open && !s.locked, `Escape closes back to Home (path ${s.path}, open ${s.open}, locked ${s.locked})`)
+  check(Math.abs(s.scrollY - homeY) < 40, `closing lands back on the bento (scrollY ${s.scrollY} vs ${homeY})`)
+  check(s.title.startsWith(`${NAME} |`) && s.canonicals.length === 1, `Home head restored (${s.title})`)
+
+  await page.click('#work a[href="/work/apps"]')
+  await page.waitForTimeout(1000)
+  await shot(page, 'desk-apps')
+  await page.goBack()
+  await page.waitForTimeout(1000)
+  s = await read(page)
+  check(s.path === '/' && !s.open, 'browser Back closes the sheet')
+
+  // Direct visit: the sheet opens with Home behind it; closing leaves Home.
+  await page.goto(`${BASE}/work/side-projects`, { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(1600)
+  s = await read(page)
+  check(s.open && s.title.startsWith('Side Projects'), 'direct /work/side-projects opens its sheet')
+  await shot(page, 'desk-direct-side-projects')
+  await page.click('.sh__close')
+  await page.waitForTimeout(1200)
+  s = await read(page)
+  check(s.path === '/' && !s.open, 'closing a direct visit leaves Home')
+
+  await page.goto(`${BASE}/work/featured`, { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(1600)
+  await shot(page, 'desk-featured')
+  await page.goto(`${BASE}/work/nope`, { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(800)
+  check((await read(page)).path === '/', 'unknown chapter redirects Home')
+
+  check(errors.length === 0, `desktop: no page errors ${errors.join(' | ')}`)
+  await context.close()
+}
+
+/* ---------- Light theme ---------- */
+{
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } })
+  await context.addInitScript(() => localStorage.setItem('pv2-theme', 'light'))
+  const page = await context.newPage()
+  await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(1000)
+  await page.evaluate(() => document.getElementById('work').scrollIntoView())
+  await page.waitForTimeout(1200)
+  const b = await bento(page)
+  check(b.edges.length === 1 && b.edges[0] === '0px rgba(14, 27, 42, 0.14) 0px 0px 0px 1px inset', `light: every tile has the soft hairline edge (${b.edges})`)
+  check(!b.overflowX, 'light 1280: no sideways scroll')
+  await shot(page, 'laptop-light-bento')
+  await context.close()
+}
+
+/* ---------- Phone ---------- */
+{
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 })
+  await context.addInitScript(() => localStorage.setItem('pv2-theme', 'dark'))
+  const page = await context.newPage()
+  const errors = []
+  page.on('pageerror', (e) => errors.push(e.message))
+  await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(1000)
+  await page.evaluate(() => document.getElementById('work').scrollIntoView())
+  await page.waitForTimeout(900)
+  await shot(page, 'phone-bento')
+  const cols = await page.evaluate(() => getComputedStyle(document.querySelector('.wb__grid')).gridTemplateColumns.split(' ').length)
+  check(cols === 2, `phone: the bento is two columns (${cols})`)
+  await page.locator('#work a[href="/work/featured"]').tap()
+  await page.waitForTimeout(1100)
+  let s = await read(page)
+  check(s.path === '/work/featured' && s.open, `phone: tapping a tile opens its sheet (${s.path})`)
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'phone: no sideways scroll')
+  await shot(page, 'phone-open')
+
+  // Swipe the grab bar down with a flick: the sheet should close.
+  const grab = await page.locator('.sh__grab').boundingBox()
+  const x = grab.x + grab.width / 2
+  let y = grab.y + grab.height / 2
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  for (let i = 0; i < 6; i++) {
+    y += 40
+    await page.mouse.move(x, y)
+    await page.waitForTimeout(16)
+  }
+  await page.mouse.up()
+  await page.waitForTimeout(1100)
+  s = await read(page)
+  check(s.path === '/' && !s.open && !s.locked, `phone: a flick down on the grab bar closes it (path ${s.path})`)
+  check(errors.length === 0, `phone: no page errors ${errors.join(' | ')}`)
+  await context.close()
+}
+
+await browser.close()
+console.log(failures.length ? `\n${failures.length} FAILED` : '\nALL PASS')
+process.exit(failures.length ? 1 : 0)

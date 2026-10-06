@@ -1,0 +1,23 @@
+[
+  { "path": "images/brand/mark.webp", "width": 128, "height": 128, "kind": "mark", "theme": "light", "label": "Y" },
+  { "path": "images/brand/mark-light.webp", "width": 128, "height": 128, "kind": "mark", "theme": "dark", "label": "Y" },
+  { "path": "images/brand/mark-96.webp", "width": 96, "height": 96, "kind": "resize", "from": "images/brand/mark.webp" },
+  { "path": "images/brand/mark-light-96.webp", "width": 96, "height": 96, "kind": "resize", "from": "images/brand/mark-light.webp" },
+  { "path": "favicon.png", "width": 64, "height": 64, "kind": "mark", "theme": "light", "label": "Y" },
+  { "path": "apple-touch-icon.png", "width": 180, "height": 180, "kind": "mark", "theme": "light", "label": "Y", "opaque": true },
+  { "path": "images/profile/avatar.webp", "width": 400, "height": 400, "kind": "avatar" },
+  { "path": "images/profile/avatar-224.webp", "width": 224, "height": 224, "kind": "resize", "from": "images/profile/avatar.webp" },
+  { "path": "images/badges/badge.webp", "width": 192, "height": 192, "kind": "badge", "label": "Certified" },
+  { "path": "images/tools/tool-01.svg", "kind": "tool", "label": "A" },
+  { "path": "images/tools/tool-02.svg", "kind": "tool", "label": "B" },
+  { "path": "images/tools/tool-03.svg", "kind": "tool", "label": "C" },
+  { "path": "images/tools/tool-04.svg", "kind": "tool", "label": "D" },
+  { "path": "images/tools/tool-05.svg", "kind": "tool", "label": "E" },
+  { "path": "images/tools/tool-06.svg", "kind": "tool", "label": "F" },
+  { "path": "images/tools/tool-07.svg", "kind": "tool", "label": "G" },
+  { "path": "images/tools/tool-08.svg", "kind": "tool", "label": "H" },
+  { "path": "images/tools/tool-09.svg", "kind": "tool", "label": "I" },
+  { "path": "images/tools/tool-10.svg", "kind": "tool", "label": "J" },
+  { "path": "images/tools/tool-11.svg", "kind": "tool", "label": "K" },
+  { "path": "images/tools/tool-12.svg", "kind": "tool", "label": "L" }
+]
