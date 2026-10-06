@@ -67,6 +67,12 @@ export const placedLinks: PlacedLink[] = links.map((l) => {
   return { ...base, d: `M${cx(from)} ${from.y + from.h} V${to.y - 74} H${cx(to)} V${to.y}` }
 })
 
+// Geometry is fixed; copy comes from the current public content, including saved admin edits.
+placedLinks.forEach(link => Object.defineProperty(link, 'label', {
+  enumerable: true,
+  get: () => liveAutomation.links.find(value => value.from === link.from && value.to === link.to)?.label,
+}))
+
 /** Where each method step starts: the first stage of that step begins to build. */
 export const stepStarts = liveAutomation.steps.map((_, k) =>
   k === 0 ? 0 : Math.min(...placedNodes.filter((n) => n.step === k).map((n) => n.a)),
