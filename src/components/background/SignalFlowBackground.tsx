@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useMediaQuery } from '@/hooks/use-media-query'
 import type { FlowSettings, SignalFlow } from './signal-flow'
 import './background.css'
 
@@ -32,6 +33,7 @@ function contentCenter(layout: ContentLayout, viewportWidth: number): number {
  * on its first frame. Reduced motion gets one still frame and no loop.
  */
 export function SignalFlowBackground({ layout }: { layout: ContentLayout }) {
+  const animated = useMediaQuery('(min-width: 1024px) and (hover: hover) and (pointer: fine)')
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const layoutRef = useRef(layout)
 
@@ -121,7 +123,7 @@ export function SignalFlowBackground({ layout }: { layout: ContentLayout }) {
       cleanups.forEach((fn) => fn())
       flow?.dispose()
     }
-  }, [])
+  }, [animated])
 
-  return <canvas ref={canvasRef} className="app-bg" aria-hidden />
+  return animated ? <canvas ref={canvasRef} className="app-bg" aria-hidden /> : <div className="app-bg app-bg--still" aria-hidden />
 }

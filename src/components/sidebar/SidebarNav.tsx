@@ -36,9 +36,11 @@ export function SidebarNav({ collapsed, onNavigate, onHoverChange }: Props) {
 
   // On Home, Home and section entries glide instead of navigating (Home to the top, Work to its section).
   const glide = (event: MouseEvent, section: string) => {
-    if (!onHome) return
+    if (!onHome || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
     event.preventDefault()
-    scrollToSection(section)
+    // The mobile drawer must release its scroll lock before the native glide starts.
+    if (onNavigate) requestAnimationFrame(() => scrollToSection(section))
+    else scrollToSection(section)
   }
   const { listRef, indicatorRef, hoverId, setHoverId } = useNavIndicator()
   const { theme, toggleTheme } = useTheme()

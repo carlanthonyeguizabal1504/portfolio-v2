@@ -5,6 +5,7 @@ import './styles/index.css'
 import { router } from './app/router'
 import { personalize } from './content/personalize'
 import { applyContent, snapshot, loadContent } from './lib/content-store'
+import './styles/mobile.css'
 
 personalize()
 applyContent(snapshot())

@@ -1,10 +1,11 @@
-import { useRef, type CSSProperties } from 'react'
-import { ArrowUpRight } from '@phosphor-icons/react'
+import { useRef, useState, type CSSProperties } from 'react'
+import { ArrowUpRight, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import { PageMeta } from '@/app/PageMeta'
 import type { PageRoute } from '@/app/routes'
 import { PageHeader } from '@/components/page/PageHeader'
 import { showcaseFaq, showcaseFilm, showcaseHost, showcasePage, showcaseStats, productTabs } from '@/content/showcase'
 import { useScrollScene } from '@/hooks/use-scroll-scene'
+import { DESKTOP_QUERY, useMediaQuery } from '@/hooks/use-media-query'
 import { showcaseJsonLd } from '@/lib/seo'
 import { BrowserWindow } from './BrowserWindow'
 import { FilmWindow } from './FilmWindow'
@@ -31,6 +32,8 @@ function ShowcaseHeader({ nested }: { nested: boolean }) {
 
 /** Film, stats, rooms, questions. Nested = inside a Home section, so every heading steps down one level. */
 function ShowcaseBody({ nested }: { nested: boolean }) {
+  const isDesktop = useMediaQuery(DESKTOP_QUERY)
+  const [mobileRoom, setMobileRoom] = useState(0)
   const roomsRef = useRef<HTMLElement>(null)
   useScrollScene(roomsRef, roomsScene)
   const c = showcasePage
@@ -58,6 +61,19 @@ function ShowcaseBody({ nested }: { nested: boolean }) {
             <H2 id="kt-rooms-title" className="pg-h2">
               {c.roomsTitle}
             </H2>
+            {!isDesktop && (
+              <div className="kt-mobile-nav">
+                <label className="sr-only" htmlFor="showcase-project">Choose a showcase project</label>
+                <select id="showcase-project" value={mobileRoom} onChange={event => setMobileRoom(Number(event.target.value))}>
+                  {productTabs.map((room, i) => <option key={room.id} value={i}>{pad2(i + 1)} — {room.label}</option>)}
+                </select>
+                <div>
+                  <button type="button" disabled={mobileRoom === 0} onClick={() => setMobileRoom(mobileRoom - 1)} aria-label="Previous showcase project"><CaretLeft size={18} aria-hidden /></button>
+                  <span>{pad2(mobileRoom + 1)} / {pad2(productTabs.length)}</span>
+                  <button type="button" disabled={mobileRoom === productTabs.length - 1} onClick={() => setMobileRoom(mobileRoom + 1)} aria-label="Next showcase project"><CaretRight size={18} aria-hidden /></button>
+                </div>
+              </div>
+            )}
             <ol className="kt-rooms__list">
               {productTabs.map((room, i) => (
                 <li key={room.id}>
@@ -73,9 +89,9 @@ function ShowcaseBody({ nested }: { nested: boolean }) {
             </span>
           </div>
 
-          <div className="kt-rooms__panes">
+          <div className="kt-rooms__panes" aria-live={!isDesktop ? 'polite' : undefined}>
             {productTabs.map((room, i) => (
-              <figure key={room.id} id={`kt-room-${room.id}`} className="kt-room" data-kt-pane={i} data-on={i === 0 ? '' : undefined}>
+              <figure key={room.id} id={`kt-room-${room.id}`} className="kt-room" data-kt-pane={i} data-on={i === 0 ? '' : undefined} data-mobile-active={mobileRoom === i} aria-hidden={!isDesktop && mobileRoom !== i ? true : undefined}>
                 <BrowserWindow url={`${showcaseHost} / ${room.label.toLowerCase()}`}>
                   <div className="kt-screen">
                     <img

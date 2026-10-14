@@ -13,6 +13,14 @@
   opacity: 1;
 }
 
+/* Touch screens keep the atmosphere without downloading or animating a WebGL scene. */
+.app-bg--still {
+  opacity: 1;
+  background:
+    radial-gradient(ellipse at 90% 15%, var(--accent-soft), transparent 58%),
+    repeating-linear-gradient(115deg, transparent 0 100px, var(--grid-line) 101px, transparent 102px 180px);
+}
+
 /* Page content paints above the background. */
 .app-main {
   position: relative;

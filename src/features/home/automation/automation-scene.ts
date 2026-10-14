@@ -13,8 +13,8 @@ const SETTLE = 0.05 // after a build, its bright contour settles back over this 
  * state is a pure function of progress, so scrolling back un-builds it. Reduced motion: the CSS
  * shows the finished diagram and this scene does not run.
  */
-export const automationScene: ScrollScene = (root, { reduce }) => {
-  if (reduce) return
+export const automationScene: ScrollScene = (root, { smooth }) => {
+  if (!smooth) return
   root.setAttribute('data-live', '')
   const q = <T extends Element>(sel: string) => Array.from(root.querySelectorAll<T>(sel))
   const time = (el: Element) => ({ a: Number(el.getAttribute('data-a')), b: Number(el.getAttribute('data-b')) })

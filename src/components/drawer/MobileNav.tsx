@@ -33,6 +33,19 @@ export function MobileNav() {
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setDrawerOpen(false)
+      if (event.key === 'Tab' && panel) {
+        const items = Array.from(panel.querySelectorAll<HTMLElement>('a[href], button:not(:disabled), [tabindex="0"]'))
+          .filter(element => element.getClientRects().length > 0)
+        const first = items[0]
+        const last = items.at(-1)
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+          event.preventDefault()
+          last?.focus()
+        } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === panel)) {
+          event.preventDefault()
+          first?.focus()
+        }
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => {

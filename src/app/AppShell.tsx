@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, ScrollRestoration } from 'react-router'
 import { Sidebar } from '@/components/sidebar/Sidebar'
 import { MobileNav } from '@/components/drawer/MobileNav'
+import { SectionNavigator } from '@/components/drawer/SectionNavigator'
 import { SearchPalette } from '@/components/search/SearchPalette'
 import { SignalFlowBackground } from '@/components/background/SignalFlowBackground'
 import { SiteFooter } from '@/components/page/SiteFooter'
@@ -32,7 +33,7 @@ function useShortcuts(isDesktop: boolean) {
 
 function Shell() {
   const isDesktop = useMediaQuery(DESKTOP_QUERY)
-  const { collapsed } = useShell()
+  const { collapsed, drawerOpen } = useShell()
   useShortcuts(isDesktop)
   useSmoothScroll()
 
@@ -44,12 +45,13 @@ function Shell() {
       <SignalFlowBackground layout={!isDesktop ? 'full-width' : collapsed ? 'sidebar-collapsed' : 'sidebar-expanded'} />
       {/* Render one navigation, not both, so screen readers meet a single "Main" nav. */}
       {isDesktop ? <Sidebar /> : <MobileNav />}
-      <main id="main" className="app-main" tabIndex={-1}>
+      <main id="main" className="app-main" tabIndex={-1} inert={!isDesktop && drawerOpen}>
         <div className="app-main__inner">
           <Outlet />
           <SiteFooter />
         </div>
       </main>
+      {!isDesktop && <SectionNavigator />}
       <SearchPalette />
       <ScrollRestoration />
     </div>

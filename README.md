@@ -24,6 +24,12 @@ npm run build
 
 The source entry is `source-index.html`. The root `index.html` and static assets are the published build for GitHub Pages. After editing source, run `npm run build` then `npm run publish:files` to update the public files before committing. The site uses hash routing so shared project and admin links work without server rewrite rules.
 
+## Mobile experience
+
+Below 1024px, a floating section dock offers previous/next sections, a section picker, and back to top. It follows the section being read, respects reduced motion, and stays out of the way of menus, project details, and focused form fields. The process explorer and showcase use tap controls to reduce vertical scrolling. Skill cards stay in normal reading order; touch devices use a still background instead of the WebGL animation.
+
+After building, run `node scripts/check-mobile-navigation.mjs` for responsive and navigation checks (Playwright Chromium required). The check covers narrow phones, tablets, landscape, modal focus, section jumps, project sheets, form clearance, and desktop resizing.
+
 ## Admin and security
 
 Supabase validates the session and admin allowlist before saving. Database row-level security is the final authorization layer. No password or secret/service-role key is stored in the source. The publishable key is intentionally public. Sessions are kept in the current browser tab and refresh automatically. The editor prevents overwriting a newer edit from another tab.

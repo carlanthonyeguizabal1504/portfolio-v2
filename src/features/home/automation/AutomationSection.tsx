@@ -17,6 +17,7 @@ import {
 } from '@phosphor-icons/react'
 import { liveAutomation, type FlowIcon } from '@/content/automation'
 import { useScrollScene } from '@/hooks/use-scroll-scene'
+import { DESKTOP_QUERY, useMediaQuery } from '@/hooks/use-media-query'
 import { gsap, MOTION_CONDITIONS } from '@/lib/motion/gsap'
 import { automationScene } from './automation-scene'
 import { placedLinks, placedNodes, related, VIEW, zones, zoomBox } from './flow-model'
@@ -39,12 +40,46 @@ const ICONS: Record<FlowIcon, Icon> = {
 const FULL_VIEW = `0 15 ${VIEW.w} 545`
 const pad2 = (n: number) => String(n).padStart(2, '0')
 
+/** The same editable process content, readable at phone size without a pinned SVG. */
+function MobileProcess() {
+  const [index, setIndex] = useState(0)
+  const node = placedNodes[index]!
+  const Glyph = ICONS[node.icon]
+  return (
+    <div className="fl-mobile">
+      <ol className="fl-mobile__steps">
+        {liveAutomation.steps.map((step, i) => (
+          <li key={step.name}><span>{pad2(i + 1)}</span><div><h3>{step.name}</h3><p>{step.body}</p></div></li>
+        ))}
+      </ol>
+      <div className="fl-mobile__explorer">
+        <label htmlFor="process-stage">Explore the workflow</label>
+        <select id="process-stage" value={index} onChange={event => setIndex(Number(event.target.value))}>
+          {placedNodes.map((stage, i) => <option key={stage.id} value={i}>{pad2(i + 1)} — {stage.title}</option>)}
+        </select>
+        <div className="fl-mobile__stage" aria-live="polite" aria-atomic="true">
+          <span className="fl-mobile__icon"><Glyph size={30} weight="light" aria-hidden /></span>
+          <p className="fl-mobile__tag">{node.tag}</p>
+          <h3>{node.title}</h3>
+          <p>{node.about}</p>
+        </div>
+        <div className="fl-mobile__controls">
+          <button type="button" disabled={index === 0} onClick={() => setIndex(index - 1)} aria-label="Previous stage"><CaretLeft size={18} aria-hidden /></button>
+          <span>{pad2(index + 1)} <span>/ {pad2(placedNodes.length)}</span></span>
+          <button type="button" disabled={index === placedNodes.length - 1} onClick={() => setIndex(index + 1)} aria-label="Next stage"><CaretRight size={18} aria-hidden /></button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /**
  * Live automation: a lead's path through the booking pipeline, drawn stage by stage while the section
  * holds (CSS sticky) and the page scrolls. The rail follows the method steps. Pointing at a
  * stage inspects it; on phones a tap zooms the diagram onto it, with previous / next.
  */
 export function AutomationSection() {
+  const isDesktop = useMediaQuery(DESKTOP_QUERY)
   const sectionRef = useRef<HTMLElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
   useScrollScene(sectionRef, automationScene)
@@ -104,7 +139,8 @@ export function AutomationSection() {
           </h2>
         </header>
 
-        <div className="fl__grid">
+        {!isDesktop && <MobileProcess />}
+        <div className="fl__grid" hidden={!isDesktop}>
           <div className="fl__rail">
             <span className="fl__rule" aria-hidden>
               <i data-fl-fill />

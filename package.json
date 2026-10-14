@@ -22,7 +22,8 @@
     "check:about": "node scripts/check-about.mjs",
     "check:contact": "node scripts/check-contact.mjs",
     "postbuild": "node scripts/write-version.mjs",
-    "publish:files": "node scripts/publish-files.mjs"
+    "publish:files": "node scripts/publish-files.mjs",
+    "check:mobile": "node scripts/check-mobile-navigation.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
