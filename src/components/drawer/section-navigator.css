@@ -78,3 +78,33 @@ body:has(input:focus, textarea:focus, select:focus, [contenteditable='true']:foc
   .section-picker[open] { animation: section-picker-in 200ms ease-out; }
   @keyframes section-picker-in { from { opacity: 0; transform: translateY(24px); } }
 }
+
+/* Desktop: a compact corner control, clear of the left sidebar. */
+@media (min-width: 1024px) {
+  .section-dock {
+    left: auto;
+    right: 24px;
+    bottom: 24px;
+    width: 340px;
+    max-width: calc(100vw - var(--sidebar-w) - 72px);
+    margin: 0;
+  }
+  .section-picker {
+    inset: auto 24px 24px auto;
+    width: 380px;
+    max-height: calc(100dvh - 48px);
+    margin: 0;
+    border-bottom: 1px solid var(--line-strong);
+    border-radius: 24px;
+    box-shadow: var(--shadow-float);
+  }
+  .app:has(.section-dock:not([hidden])) .site-foot {
+    padding-bottom: 112px;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .section-dock > button:hover:not(:disabled),
+  .section-picker button:hover {
+    background: var(--accent-soft);
+  }
+}

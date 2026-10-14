@@ -108,7 +108,7 @@ try {
 
   const desktop=await browser.newContext({viewport:{width:1440,height:900}, ignoreHTTPSErrors: process.env.PLAYWRIGHT_IGNORE_HTTPS_ERRORS === '1'})
   const dp=await desktop.newPage();dp.on('pageerror',e=>errors.push(e.message));await dp.goto(url);await dp.waitForTimeout(1500)
-  check(await dp.locator('.section-dock').count()===0,'desktop retains sidebar navigation')
+  check(await dp.locator('.section-dock').isVisible(),'desktop includes the section dock alongside the sidebar')
   check(await dp.locator('.fl-mobile').count()===0,'desktop retains its workflow diagram')
   check(await dp.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'desktop has no sideways overflow')
   await dp.screenshot({path:'scripts/out/desktop-final.png'})

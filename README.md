@@ -26,7 +26,7 @@ The source entry is `source-index.html`. The root `index.html` and static assets
 
 ## Mobile experience
 
-Below 1024px, a floating section dock offers previous/next sections, a section picker, and back to top. It follows the section being read, respects reduced motion, and stays out of the way of menus, project details, and focused form fields. The process explorer and showcase use tap controls to reduce vertical scrolling. Skill cards stay in normal reading order; touch devices use a still background instead of the WebGL animation.
+A floating section dock on desktop and mobile offers previous/next sections, a section picker, and back to top. It sits at the lower right on desktop and within thumb reach on mobile. It follows the section being read, respects reduced motion, and stays out of the way of menus, project details, and focused form fields. The process explorer and showcase use tap controls to reduce vertical scrolling. Skill cards stay in normal reading order; touch devices use a still background instead of the WebGL animation.
 
 After building, run `node scripts/check-mobile-navigation.mjs` for responsive and navigation checks (Playwright Chromium required). The check covers narrow phones, tablets, landscape, modal focus, section jumps, project sheets, form clearance, and desktop resizing.
 

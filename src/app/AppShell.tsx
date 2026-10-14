@@ -51,7 +51,7 @@ function Shell() {
           <SiteFooter />
         </div>
       </main>
-      {!isDesktop && <SectionNavigator />}
+      <SectionNavigator />
       <SearchPalette />
       <ScrollRestoration />
     </div>

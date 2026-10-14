@@ -19,7 +19,7 @@ const sections = [
 ]
 const labelFor = (section: typeof sections[number]) => pages.find(p => p.section === section.id)?.label ?? section.label
 
-/** A small thumb-reachable dock; the native dialog supplies focus containment and Escape. */
+/** A compact section dock for touch and desktop; the native dialog supplies focus containment and Escape. */
 export function SectionNavigator() {
   const { pathname } = useLocation()
   const { drawerOpen, searchOpen } = useShell()
@@ -103,7 +103,7 @@ export function SectionNavigator() {
           <ArrowDown size={18} aria-hidden />
         </button>
       </nav>
-      <dialog ref={dialog} id="section-picker" className="section-picker" aria-labelledby="section-picker-title" onCancel={close} onClick={event => { if (event.target === event.currentTarget) close() }}>
+      <dialog ref={dialog} id="section-picker" className="section-picker" data-lenis-prevent aria-labelledby="section-picker-title" onCancel={close} onClick={event => { if (event.target === event.currentTarget) close() }}>
         <div className="section-picker__card">
           <header>
             <div><p>Explore the portfolio</p><h2 id="section-picker-title">Where to next?</h2></div>
