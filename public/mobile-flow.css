@@ -1,0 +1,122 @@
+/*
+ * Portfolio V2 · mobile cinematic scroll + rubric finishing.
+ * Progressive enhancement: compositor-based hero, native touch scrolling,
+ * lightweight scroll-linked story panels. Desktop layout stays unchanged.
+ */
+.ct-direct { justify-content: flex-start; column-gap: clamp(15px, 2.5vw, 34px); }
+.ct-direct .rubric-phone { white-space: nowrap; }
+.site-foot p { overflow-wrap: anywhere; }
+@media (max-width: 1023px) {
+  .ct-direct { justify-content: flex-start; row-gap: 4px; }
+  .ct-direct .rubric-phone { min-height: 44px; }
+}
+@media (max-width: 1023px) and (min-height: 560px) and (prefers-reduced-motion: no-preference) {
+  /* Match the desktop held reading band. JS only moves the text and changes opacity;
+     the page itself remains browser-native scrolling, with no fake momentum. */
+  .app .ms {
+    height: 290svh;
+    padding-block: 0;
+  }
+  .app .ms__pin {
+    position: sticky;
+    top: calc(56px + env(safe-area-inset-top));
+    display: flex;
+    flex-direction: column;
+    height: calc(100svh - 56px - env(safe-area-inset-top));
+    padding-block: clamp(28px, 6svh, 56px);
+    overflow: clip;
+  }
+  .app .ms__window {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 21%, #000 79%, transparent);
+    mask-image: linear-gradient(transparent, #000 21%, #000 79%, transparent);
+  }
+  .app .ms__text { will-change: transform; }
+  .app .ms__line {
+    animation: none;
+    opacity: calc(var(--ms-floor) + (1 - var(--ms-floor)) * var(--f, 1));
+  }
+  .app .ms__track > i { transform: scaleX(0); }
+  /* Every card sticks and settles on the previous one while keeping text tappable. */
+  .app .sv__stack { gap: clamp(55px, 12svh, 110px); }
+  .app .sv__item {
+    position: sticky;
+    top: calc(76px + env(safe-area-inset-top) + var(--i) * 10px);
+  }
+  .app .sv__tail { display: block; height: 15svh; }
+  .app .sv__card {
+    min-height: clamp(240px, 38svh, 370px);
+    transform-origin: 50% 0;
+    will-change: transform;
+  }
+  /* Project showcase walks forward on scroll, like the desktop held-screen stage. */
+  .app .kt-rooms {
+    height: calc(90svh + (var(--n) - 1) * 55svh);
+    margin-top: 32px;
+  }
+  .app .kt-rooms__pin {
+    position: sticky;
+    top: calc(62px + env(safe-area-inset-top));
+    height: calc(100svh - 92px - env(safe-area-inset-top));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    min-height: 0;
+  }
+  .app .kt-rooms__nav .pg-h2 { margin-bottom: 10px; }
+  .app .kt-mobile-nav { margin-bottom: 0; gap: 8px; }
+  .app .kt-rooms__panes { min-height: 0; gap: 0; }
+  .app .kt-room figcaption { margin-top: 10px; }
+  .app .kt-room :is(h3,h4) { font-size: clamp(15px, 4.2vw, 21px); }
+  .app .kt-room p { font-size: 13px; line-height: 1.45; }
+}
+@supports (animation-timeline: view()) {
+  @media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
+    /* Recover the desktop's two-layer hero exit; the older mobile layer disabled it. */
+    .app .hero { view-timeline-name: --hero; }
+    .app .hero .hero__title {
+      animation: hero-sink linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+    .app .hero .hero__foot {
+      animation: hero-leave linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+    .app .hero .hero__layer--thin {
+      animation: mobile-hero-part-left linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+    .app .hero .hero__layer--bold {
+      animation: mobile-hero-part-right linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+    .fl-mobile__steps li,
+    .fl-mobile__explorer {
+      animation: mobile-flow-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 80%;
+    }
+  }
+}
+@keyframes mobile-hero-part-left { to { translate: -5% 0; } }
+@keyframes mobile-hero-part-right { to { translate: 5% 0; } }
+@keyframes mobile-flow-reveal {
+  from { opacity: 0.35; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 1023px) and (max-height: 559px) {
+  .app .ms, .app .kt-rooms { height: auto; }
+  .app .ms__pin, .app .kt-rooms__pin { position: static; height: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app .ms__text, .app .sv__card { transform: none !important; }
+  .app .ms__line { opacity: 1 !important; animation: none !important; }
+}
