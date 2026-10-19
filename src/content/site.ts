@@ -21,6 +21,8 @@ export const site = {
   url: 'https://example.com',
   role: 'Your Role, Your Title',
   email: 'you@example.com',
+  phone: '+639451973528',
+  phoneDisplay: '0945 197 3528',
   emailSubject: 'Project inquiry',
   replyPromise: 'Reply within one business day.',
   location: 'Your City, GMT+0',
