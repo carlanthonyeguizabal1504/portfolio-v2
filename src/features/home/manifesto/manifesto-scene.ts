@@ -10,10 +10,8 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
  * its tracker label as its line reaches the band; the eyebrow's line tracks progress. Phones and
  * tablets run the CSS view timeline in manifesto.css instead; reduced motion keeps the still layout.
  */
-export const manifestoScene: ScrollScene = (root, { smooth, reduce }) => {
-  // Match the desktop pinned reading-band on tall phones, while retaining native touch scrolling.
-  const mobileStory = window.matchMedia('(max-width: 1023px) and (min-height: 560px)').matches
-  if (reduce || (!smooth && !mobileStory)) return
+export const manifestoScene: ScrollScene = (root, { smooth }) => {
+  if (!smooth) return
   const win = root.querySelector<HTMLElement>('[data-ms-window]')!
   const text = root.querySelector<HTMLElement>('[data-ms-text]')!
   const lines = Array.from(root.querySelectorAll<HTMLElement>('[data-line]'))
