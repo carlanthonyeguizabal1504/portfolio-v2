@@ -7,7 +7,7 @@ export function SiteFooter() {
   return (
     <footer className="site-foot">
       <p>
-        {site.name} · {site.brand}
+        © {new Date().getFullYear()} {site.name}. All Rights Reserved.
       </p>
       <nav aria-label="Legal">
         <Link to="/privacy">Privacy Policy</Link>
