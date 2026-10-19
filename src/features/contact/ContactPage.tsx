@@ -1,4 +1,4 @@
-import { CaretDown, EnvelopeSimple } from '@phosphor-icons/react'
+import { CaretDown, EnvelopeSimple, Phone } from '@phosphor-icons/react'
 import { PageMeta } from '@/app/PageMeta'
 import type { PageRoute } from '@/app/routes'
 import { PageHeader } from '@/components/page/PageHeader'
@@ -38,6 +38,10 @@ function ContactSheet({ nested }: { nested: boolean }) {
           <a className="ct-mail" href={mailtoHref()}>
             <EnvelopeSimple size={16} weight="fill" aria-hidden />
             {site.email}
+          </a>
+          <a className="ct-mail" href={`tel:${site.phone}`}>
+            <Phone size={16} weight="fill" aria-hidden />
+            {site.phoneDisplay}
           </a>
           <SocialLinks />
         </div>
