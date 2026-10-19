@@ -8,8 +8,10 @@ import type { ScrollScene } from '@/hooks/use-scroll-scene'
  * rule fills with the share of the pile that has landed. Phones keep the sticky pile without the sink;
  * reduced motion gets a plain stack.
  */
-export const servicesScene: ScrollScene = (root, { smooth }) => {
-  if (!smooth) return
+export const servicesScene: ScrollScene = (root, { smooth, reduce }) => {
+  // The native sticky stack also sinks smoothly on portrait phones; never intercept touch input.
+  const mobileStack = window.matchMedia('(max-width: 1023px) and (min-height: 560px)').matches
+  if (reduce || (!smooth && !mobileStack)) return
   const items = Array.from(root.querySelectorAll<HTMLElement>('.sv__item'))
   const cards = items.map((item) => item.querySelector<HTMLElement>('.sv__card')!)
   const dims = items.map((item) => item.querySelector<HTMLElement>('.sv__dim')!)
